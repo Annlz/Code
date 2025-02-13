@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scrapbook</title>
+    <title>Aki</title>
     <style>
         body {
             display: flex;
@@ -11,11 +11,12 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #fff0f3;
+            font-family: 'Courier New', monospace;
         }
 
         .envelope {
-            width: 1000px;
+            width: 1200px;
             height: 800px;
             background-color: white;
             position: relative;
@@ -44,15 +45,14 @@
             overflow: hidden;
         }
 
-        /* Add new envelope styling */
         .envelope-front::before {
             content: '';
             position: absolute;
             top: 0;
             width: 0;
             height: 0;
-            border-left: 500px solid transparent;
-            border-right: 500px solid transparent;
+            border-left: 600px solid transparent;
+            border-right: 600px solid transparent;
             border-top: 400px solid #f5f5f5;
             transform-origin: top;
             transition: transform 0.4s;
@@ -64,8 +64,8 @@
             bottom: 0;
             width: 0;
             height: 0;
-            border-left: 500px solid transparent;
-            border-right: 500px solid transparent;
+            border-left: 600px solid transparent;
+            border-right: 600px solid transparent;
             border-bottom: 400px solid #f5f5f5;
         }
 
@@ -73,7 +73,7 @@
             position: absolute;
             width: 80px;
             height: 80px;
-            background-color: #e6e6e6;
+            background-color: #ffb6c1;
             border-radius: 50%;
             z-index: 2;
             display: flex;
@@ -92,7 +92,7 @@
             height: 100%;
             backface-visibility: hidden;
             transform: rotateX(180deg);
-            background-color: white;
+            background-color: #fff5f7;
             border-radius: 10px;
             overflow: hidden;
             transform-style: preserve-3d;
@@ -103,20 +103,40 @@
             display: none;
             padding: 20px;
             box-sizing: border-box;
-            background-color: white;
+            background-color: #fff5f7;
             background-image: 
-                linear-gradient(90deg, #ff9999 1px, transparent 1px),    /* vertical margin line */
-                linear-gradient(#e5e5e5 1px, transparent 1px);           /* horizontal lines */
+                linear-gradient(90deg, #ffb6c1 1px, transparent 1px),
+                linear-gradient(#ffe4e8 1px, transparent 1px);
             background-size: 
-                calc(20px + 100%) 100%,    /* margin line */
-                100% 25px;                 /* space between lines */
+                calc(20px + 100%) 100%,
+                100% 25px;
             background-position: 
-                20px 0,                    /* margin line position */
-                0 0;                       /* horizontal lines position */
+                20px 0,
+                0 0;
             background-repeat: no-repeat, repeat;
-            padding-left: 40px;            /* space for margin */
+            padding-left: 40px;
             transition: transform 0.5s;
             transform-style: preserve-3d;
+            position: relative;
+        }
+
+        /* Decorative elements */
+        .scrapbook-page::before {
+            content: '❀';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #ffb6c1;
+        }
+
+        .scrapbook-page::after {
+            content: '♥';
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: #ffb6c1;
         }
 
         .scrapbook-page.active {
@@ -129,10 +149,10 @@
 
         .memory {
             display: flex;
-            flex-direction: row;  /* Arrange items horizontally */
+            flex-direction: row;
             width: 100%;
             height: 100%;
-            gap: 40px;           /* Gap between text and image */
+            gap: 40px;
             position: relative;
             z-index: 1;
             justify-content: center;
@@ -149,19 +169,48 @@
             position: relative;
         }
 
+        /* Decorative frame for images */
+        .memory-left::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid #ffb6c1;
+            border-radius: 5px;
+            transform: rotate(-2deg);
+            z-index: -1;
+        }
+
         .memory-right {
-            order: 2;          /* Move text to the right */
-            width: 35%;        /* Fixed width for text container */
-            text-align: left;  /* Align text to the left */
+            order: 2;
+            width: 35%;
+            text-align: left;
             padding: 20px;
-            font-family: 'Courier New', monospace;
             color: #333;
             line-height: 1.5;
+            position: relative;
+        }
+
+        /* Decorative tape for text */
+        .memory-right::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 10px;
+            width: 40px;
+            height: 15px;
+            background-color: rgba(255, 182, 193, 0.5);
+            transform: rotate(-45deg);
         }
 
         .memory-right p {
-            margin: 0;
+            margin: 0 0 15px 0;
             font-size: 1.1em;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
         }
 
         .memory img {
@@ -172,6 +221,7 @@
             border-radius: 3px;
             transform: rotate(-2deg);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 10px solid white;
         }
 
         .navigation {
@@ -186,14 +236,23 @@
         }
 
         .nav-button {
-            padding: 5px 15px;
-            background-color: #ffcce6;
+            padding: 8px 20px;
+            background-color: #ffb6c1;
             border: none;
-            border-radius: 5px;
+            border-radius: 20px;
             cursor: pointer;
+            font-family: 'Courier New', monospace;
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Updated Floating Hearts Styles */
+        .nav-button:hover {
+            background-color: #ff9aaa;
+            transform: scale(1.05);
+        }
+
         .floating-hearts {
             position: fixed;
             top: 0;
@@ -206,10 +265,29 @@
 
         .heart {
             position: fixed;
-            color: #ff99cc; /* Brighter pink color */
+            color: #ff99cc;
             opacity: 0;
             animation: floatHeart 8s linear infinite;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Decorative stickers */
+        .sticker {
+            position: absolute;
+            font-size: 24px;
+            z-index: 2;
+            animation: rotate 3s infinite alternate;
+            transition: transform 0.3s ease;
+        }
+        
+        .sticker:hover {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
         }
 
         @keyframes floatHeart {
@@ -240,18 +318,28 @@
         </div>
         <div class="scrapbook">
             <div class="scrapbook-page active">
+                <div class="sticker" style="top: 20px; right: 40px;">🌸</div>
+                <div class="sticker" style="bottom: 30px; left: 50px;">✨</div>
+                <div class="sticker" style="top: 60px; left: 30px;">🧸</div>
+                <div class="sticker" style="top: 100px; right: 60px;">🌺</div>
+                <div class="sticker" style="bottom: 80px; right: 30px;">🎀</div>
+                <div class="sticker" style="bottom: 120px; left: 40px;">🌷</div>
                 <div class="memory">
                     <div class="memory-left">
                         <img src="aki/1733038647353.jpg" alt="Memory 1">
                     </div>
                     <div class="memory-right">
                         <p>Happy Valentine's Day, my Psalm 45:2! ❤️</p>
-                        <p>I love you so much, and I appreciate everything you do. All the effort, the little things, and the big moments—we've shared so much, and I'm beyond grateful for every second with you. Thank you for being you, for loving me, and for making life so much sweeter.  </p> 
+                        <p>I love you so much, and I appreciate everything you do. All the effort, the little things, and the big moments—we've shared so much, and I'm beyond grateful for every second with you. Thank you for being you, for loving me, and for making life so much sweeter.</p>
                         <p>You mean the world to me. 💕</p>
                     </div>
                 </div>
             </div>
             <div class="scrapbook-page">
+                <div class="sticker" style="top: 30px; left: 40px;">🌺</div>
+                <div class="sticker" style="bottom: 60px; right: 50px;">✨</div>
+                <div class="sticker" style="top: 100px; right: 70px;">🧸</div>
+                <div class="sticker" style="bottom: 120px; left: 60px;">🌷</div>
                 <div class="memory">
                     <div class="memory-left">
                         <img src="aki/IMG_20241019_164649.jpg" alt="Memory 2">
@@ -263,6 +351,10 @@
                 </div>
             </div>
             <div class="scrapbook-page">
+                <div class="sticker" style="top: 30px; left: 40px;">🌺</div>
+                <div class="sticker" style="bottom: 60px; right: 50px;">✨</div>
+                <div class="sticker" style="top: 100px; right: 70px;">🧸</div>
+                <div class="sticker" style="bottom: 120px; left: 60px;">🌷</div>
                 <div class="memory">
                     <div class="memory-left">
                         <img src="aki/IMG_20241025_124236.jpg" alt="Memory 3">
@@ -275,6 +367,10 @@
                 </div>
             </div>
             <div class="scrapbook-page">
+                <div class="sticker" style="top: 50px; right: 60px;">🌸</div>
+                <div class="sticker" style="bottom: 40px; left: 50px;">💕</div>
+                <div class="sticker" style="top: 120px; left: 40px;">🧸</div>
+                <div class="sticker" style="bottom: 100px; right: 80px;">🌹</div>
                 <div class="memory">
                     <div class="memory-left">
                         <img src="aki/IMG_20241130_215021_490.jpg" alt="Memory 4">
@@ -287,9 +383,14 @@
                 </div>
             </div>
             <div class="scrapbook-page">
+                <div class="sticker" style="top: 40px; right: 50px;">🎀</div>
+                <div class="sticker" style="bottom: 50px; left: 40px;">✨</div>
+                <div class="sticker" style="top: 90px; left: 60px;">🌺</div>
+                <div class="sticker" style="bottom: 80px; right: 70px;">💝</div>
+                <div class="sticker" style="top: 150px; left: 80px;">🧸</div>
                 <div class="memory">
                     <div class="memory-left">
-                        <img src="aki/Messenger_creation_74D8D35F-C91B-408C-AADF-4AFDFB2C54F8.jpeg" alt="Memory 4">
+                        <img src="aki/Messenger_creation_74D8D35F-C91B-408C-AADF-4AFDFB2C54F8.jpeg" alt="Memory 5">
                     </div>
                     <div class="memory-right">
                         <p>I love you, and I've always been so proud of you. I talk about you all the time—so much that even people who haven't met you yet already know how amazing you are. That's just how proud I am to call you mine.
@@ -297,6 +398,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Add remaining pages with similar structure -->
             <div class="navigation">
                 <button class="nav-button" onclick="previousPage()">Previous</button>
                 <button class="nav-button" onclick="nextPage()">Next</button>
@@ -318,11 +420,9 @@
             const nextPage = pages[pageIndex];
             
             if (currentActivePage) {
-                // Set the transform origin based on direction
                 currentActivePage.style.transformOrigin = direction === 'next' ? 'left center' : 'right center';
                 nextPage.style.transformOrigin = direction === 'next' ? 'left center' : 'right center';
                 
-                // Add flipping animation
                 currentActivePage.classList.add('flipping');
                 
                 setTimeout(() => {
@@ -335,22 +435,18 @@
         }
 
         function nextPage() {
-            // Check if we're on the last page
             if (currentPage === pages.length - 1) {
-                // Add a small delay before closing
                 setTimeout(() => {
                     envelope.classList.remove('opened');
-                    // Reset to first page after envelope is closed
                     setTimeout(() => {
                         currentPage = 0;
                         document.querySelector('.scrapbook-page.active').classList.remove('active');
                         pages[0].classList.add('active');
-                    }, 500); // Wait for envelope to close
+                    }, 500);
                 }, 300);
                 return;
             }
             
-            // Normal page turning behavior
             currentPage = (currentPage + 1) % pages.length;
             showPage(currentPage, 'next');
         }
@@ -360,48 +456,38 @@
             showPage(currentPage, 'prev');
         }
 
-        // Updated floating hearts function
         function createHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart';
             heart.innerHTML = '❤';
             
-            // Random size between 20px and 60px (larger hearts)
             const size = Math.random() * 40 + 20;
             heart.style.fontSize = `${size}px`;
             
-            // Random position from left
             const left = Math.random() * 100;
             heart.style.left = `${left}%`;
             
-            // Random starting position from bottom
-            const startPos = Math.random() * 20; // Start closer to bottom
+            const startPos = Math.random() * 20;
             heart.style.bottom = `${startPos}%`;
             
-            // Random rotation
             const rotation = Math.random() * 360;
             heart.style.transform = `rotate(${rotation}deg)`;
             
-            // Random animation duration between 6s and 12s (slower movement)
             const duration = Math.random() * 6 + 6;
             heart.style.animationDuration = `${duration}s`;
 
-            // Random color variations of pink
             const colors = ['#ff99cc', '#ff80bf', '#ff66b3', '#ff4da6', '#ff1a8c'];
             heart.style.color = colors[Math.floor(Math.random() * colors.length)];
 
             document.querySelector('.floating-hearts').appendChild(heart);
             
-            // Remove heart after animation
             setTimeout(() => {
                 heart.remove();
             }, duration * 1000);
         }
 
-        // Create hearts more frequently (every 100ms)
         setInterval(createHeart, 100);
 
-        // Create initial batch of hearts
         for(let i = 0; i < 30; i++) {
             setTimeout(createHeart, Math.random() * 2000);
         }
