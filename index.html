@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrapbook</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .envelope {
+            width: 1000px;
+            height: 800px;
+            background-color: white;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .envelope.opened {
+            transform: rotateX(180deg);
+            pointer-events: auto;
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* Add new envelope styling */
+        .envelope-front::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 500px solid transparent;
+            border-right: 500px solid transparent;
+            border-top: 400px solid #f5f5f5;
+            transform-origin: top;
+            transition: transform 0.4s;
+        }
+
+        .envelope-front::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-left: 500px solid transparent;
+            border-right: 500px solid transparent;
+            border-bottom: 400px solid #f5f5f5;
+        }
+
+        .envelope-seal {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #e6e6e6;
+            border-radius: 50%;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .envelope.opened .envelope-front::before {
+            transform: rotateX(180deg);
+        }
+
+        .scrapbook {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform: rotateX(180deg);
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .scrapbook-page {
+            height: 100%;
+            display: none;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: white;
+            background-image: 
+                linear-gradient(90deg, #ff9999 1px, transparent 1px),    /* vertical margin line */
+                linear-gradient(#e5e5e5 1px, transparent 1px);           /* horizontal lines */
+            background-size: 
+                calc(20px + 100%) 100%,    /* margin line */
+                100% 25px;                 /* space between lines */
+            background-position: 
+                20px 0,                    /* margin line position */
+                0 0;                       /* horizontal lines position */
+            background-repeat: no-repeat, repeat;
+            padding-left: 40px;            /* space for margin */
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+
+        .scrapbook-page.active {
+            display: flex;
+        }
+
+        .scrapbook-page.flipping {
+            transform: rotateY(180deg);
+        }
+
+        .memory {
+            display: flex;
+            flex-direction: row;  /* Arrange items horizontally */
+            width: 100%;
+            height: 100%;
+            gap: 40px;           /* Gap between text and image */
+            position: relative;
+            z-index: 1;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .memory-left {
+            flex: 0 0 auto;
+            width: 45%;
+            order: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .memory-right {
+            order: 2;          /* Move text to the right */
+            width: 35%;        /* Fixed width for text container */
+            text-align: left;  /* Align text to the left */
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .memory-right p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        .memory img {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 3px;
+            transform: rotate(-2deg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 1;
+        }
+
+        .nav-button {
+            padding: 5px 15px;
+            background-color: #ffcce6;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Updated Floating Hearts Styles */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: fixed;
+            color: #ff99cc; /* Brighter pink color */
+            opacity: 0;
+            animation: floatHeart 8s linear infinite;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+        }
+
+        @keyframes floatHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0.5) rotate(0deg);
+            }
+            10% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20vh) scale(1) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts"></div>
+    <div class="envelope">
+        <div class="envelope-front">
+            <div class="envelope-seal">
+                <h2>❤</h2>
+            </div>
+        </div>
+        <div class="scrapbook">
+            <div class="scrapbook-page active">
+                <div class="memory">
+                    <div class="memory-left">
+                        <img src="aki/1733038647353.jpg" alt="Memory 1">
+                    </div>
+                    <div class="memory-right">
+                        <p>Happy Valentine's Day, my Psalm 45:2! ❤️</p>
+                        <p>I love you so much, and I appreciate everything you do. All the effort, the little things, and the big moments—we've shared so much, and I'm beyond grateful for every second with you. Thank you for being you, for loving me, and for making life so much sweeter.  </p> 
+                        <p>You mean the world to me. 💕</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scrapbook-page">
+                <div class="memory">
+                    <div class="memory-left">
+                        <img src="aki/IMG_20241019_164649.jpg" alt="Memory 2">
+                    </div>
+                    <div class="memory-right">
+                        <p>The inner child in me always feels safe and happy when I'm with you. I love how you spoil me with your sweetness and how you make me feel so cherished. The way you comfort me, tease me, and shower me with love never fails to make my heart melt.</p>
+                        <p>I know I can be unreasonable at times, yet you still choose to be patient with me. You make the effort to understand me even when I don't make it easy, and that means more to me than words can say. Thank you for loving me the way you do—you make my world so much brighter. 💕</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scrapbook-page">
+                <div class="memory">
+                    <div class="memory-left">
+                        <img src="aki/IMG_20241025_124236.jpg" alt="Memory 3">
+                    </div>
+                    <div class="memory-right">
+                        <p>You have no idea how much my heart melts every time you make time for me. The way you go out of your way just to be with me means everything.</p>
+                        <p>Like those times you sat with me in coffee shops, even though you don't even like coffee—just because you knew I did. Or when you took the time to research the directions to places I wanted to visit, making sure we wouldn't get lost. Every staycation we've had, where you made the effort to be close to my friends, even if it wasn't always easy for you.</p>
+                        <p>But what touches me the most is that night I had to work overtime, and you still waited just so you could walk me to the sakayan. Those little things? They mean the world to me. And they remind me, over and over again, just how much you love me. ❤️</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scrapbook-page">
+                <div class="memory">
+                    <div class="memory-left">
+                        <img src="aki/IMG_20241130_215021_490.jpg" alt="Memory 4">
+                    </div>
+                    <div class="memory-right">
+                        <p>You have no idea how much you've changed me. You've brought so much peace into my life—something I never even realized I needed. With you, I feel calm, safe, and understood. </p>
+                        <p>I no longer fall asleep overthinking, drowning in my own thoughts, because you've given me a love so steady and reassuring. And most of all, you've helped me love myself again. The way you see me, the way you remind me of my worth—it makes all the difference.</p>     
+                        <p>You are my safe place, my heart's peace, and I'm so grateful for you. ❤️</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scrapbook-page">
+                <div class="memory">
+                    <div class="memory-left">
+                        <img src="aki/Messenger_creation_74D8D35F-C91B-408C-AADF-4AFDFB2C54F8.jpeg" alt="Memory 4">
+                    </div>
+                    <div class="memory-right">
+                        <p>I love you, and I've always been so proud of you. I talk about you all the time—so much that even people who haven't met you yet already know how amazing you are. That's just how proud I am to call you mine.
+                            You're someone so special to me, and I'll never stop appreciating everything that makes you you. No matter what, I'll always be here, loving you and cheering you on. ❤️</p>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation">
+                <button class="nav-button" onclick="previousPage()">Previous</button>
+                <button class="nav-button" onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const pages = document.querySelectorAll('.scrapbook-page');
+        const envelope = document.querySelector('.envelope');
+
+        envelope.addEventListener('click', function() {
+            this.classList.add('opened');
+        });
+
+        function showPage(pageIndex, direction) {
+            const currentActivePage = document.querySelector('.scrapbook-page.active');
+            const nextPage = pages[pageIndex];
+            
+            if (currentActivePage) {
+                // Set the transform origin based on direction
+                currentActivePage.style.transformOrigin = direction === 'next' ? 'left center' : 'right center';
+                nextPage.style.transformOrigin = direction === 'next' ? 'left center' : 'right center';
+                
+                // Add flipping animation
+                currentActivePage.classList.add('flipping');
+                
+                setTimeout(() => {
+                    currentActivePage.classList.remove('active', 'flipping');
+                    nextPage.classList.add('active');
+                }, 300);
+            } else {
+                nextPage.classList.add('active');
+            }
+        }
+
+        function nextPage() {
+            // Check if we're on the last page
+            if (currentPage === pages.length - 1) {
+                // Add a small delay before closing
+                setTimeout(() => {
+                    envelope.classList.remove('opened');
+                    // Reset to first page after envelope is closed
+                    setTimeout(() => {
+                        currentPage = 0;
+                        document.querySelector('.scrapbook-page.active').classList.remove('active');
+                        pages[0].classList.add('active');
+                    }, 500); // Wait for envelope to close
+                }, 300);
+                return;
+            }
+            
+            // Normal page turning behavior
+            currentPage = (currentPage + 1) % pages.length;
+            showPage(currentPage, 'next');
+        }
+
+        function previousPage() {
+            currentPage = (currentPage - 1 + pages.length) % pages.length;
+            showPage(currentPage, 'prev');
+        }
+
+        // Updated floating hearts function
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '❤';
+            
+            // Random size between 20px and 60px (larger hearts)
+            const size = Math.random() * 40 + 20;
+            heart.style.fontSize = `${size}px`;
+            
+            // Random position from left
+            const left = Math.random() * 100;
+            heart.style.left = `${left}%`;
+            
+            // Random starting position from bottom
+            const startPos = Math.random() * 20; // Start closer to bottom
+            heart.style.bottom = `${startPos}%`;
+            
+            // Random rotation
+            const rotation = Math.random() * 360;
+            heart.style.transform = `rotate(${rotation}deg)`;
+            
+            // Random animation duration between 6s and 12s (slower movement)
+            const duration = Math.random() * 6 + 6;
+            heart.style.animationDuration = `${duration}s`;
+
+            // Random color variations of pink
+            const colors = ['#ff99cc', '#ff80bf', '#ff66b3', '#ff4da6', '#ff1a8c'];
+            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+            document.querySelector('.floating-hearts').appendChild(heart);
+            
+            // Remove heart after animation
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        // Create hearts more frequently (every 100ms)
+        setInterval(createHeart, 100);
+
+        // Create initial batch of hearts
+        for(let i = 0; i < 30; i++) {
+            setTimeout(createHeart, Math.random() * 2000);
+        }
+    </script>
+</body>
+</html>
